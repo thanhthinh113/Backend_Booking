@@ -165,6 +165,73 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.get("/:email/detail", (req, res, next) => {
+  const email = req.params.email;  // Get email from URL parameters
+  User.findOne({ email: email })   // Find user by email
+    .select("email name phone address _id createdAt") // Choose the fields to return
+    .exec()
+    .then(user => {
+      if (user) {
+        res.status(200).json({
+          user: {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            address: user.address,
+            createdAt: user.createdAt,
+          },
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/user"
+          }
+        });
+      } else {
+        res.status(404).json({ message: "No valid entry found for provided email" });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: err });
+    });
+});
+
+
+router.put("/:email", (req, res, next) => {
+  const email = req.params.email; // Get email from the URL parameter
+  const updateOps = {};
+
+  // Loop through the incoming data and prepare the update object
+  for (const [key, value] of Object.entries(req.body)) {
+    updateOps[key] = value; // Map the fields to update
+  }
+
+  // Use the email to find and update the user
+  User.findOneAndUpdate({ email: email }, { $set: updateOps }, { new: true })
+    .exec()
+    .then(result => {
+      if (result) {
+        res.status(200).json({
+          message: "User updated successfully",
+          user: result, // Return the updated user data
+          request: {
+            type: "GET",
+            url: `http://localhost:3000/user/${email}`
+          }
+        });
+      } else {
+        res.status(404).json({
+          message: "No user found with the provided email"
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
+});
 
 
 
