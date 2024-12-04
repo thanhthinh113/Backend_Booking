@@ -12,6 +12,7 @@ const productSchema = mongoose.Schema({
   password: { type: String, required: true },
   name: { type: String, required: false },
   phone: { type: String },
+  gender: { type: String },
   address: { type: String },
   createdAt: { type: Date, default: Date.now },
 });

@@ -168,7 +168,7 @@ router.get("/", (req, res, next) => {
 router.get("/:email/detail", (req, res, next) => {
   const email = req.params.email;  // Get email from URL parameters
   User.findOne({ email: email })   // Find user by email
-    .select("email name phone address _id createdAt") // Choose the fields to return
+    .select("email name phone gender address _id createdAt") // Choose the fields to return
     .exec()
     .then(user => {
       if (user) {
@@ -178,6 +178,7 @@ router.get("/:email/detail", (req, res, next) => {
             email: user.email,
             name: user.name,
             phone: user.phone,
+            gender: user.gender,
             address: user.address,
             createdAt: user.createdAt,
           },
